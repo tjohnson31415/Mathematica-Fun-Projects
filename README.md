@@ -16,6 +16,8 @@ without repeats) and allows you to choose the number of guesses from 1-24 or
 infinite. There are also modes for both one player and two. This game is a good
 way to eat up some time and practice logical thinking.
 
+![Mastermind Screenshots](Mastermind_Screenshots.png)
+
 ## Stick Figure Gymnast
 
 This project developed out of my interest for computer graphics and gymnastics.
