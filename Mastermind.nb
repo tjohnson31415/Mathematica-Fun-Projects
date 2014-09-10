@@ -1,0 +1,1608 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     73662,       1598]
+NotebookOptionsPosition[     73334,       1582]
+NotebookOutlinePosition[     73680,       1597]
+CellTagsIndexPosition[     73637,       1594]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"Module", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"repeatsBoole", ",", 
+     RowBox[{"twoPlayerBoole", "=", "False"}], ",", 
+     RowBox[{"twoPlayer", "=", "0"}], ",", 
+     RowBox[{"twoPlayerSelect", "=", "False"}], ",", "player1Score", ",", 
+     RowBox[{"playing", "=", "True"}], ",", "\[IndentingNewLine]", "colors", 
+     ",", "colorReplacements", ",", "solution", ",", "tryGuess", ",", 
+     "submitGuess", ",", "\[IndentingNewLine]", "sequenceGuesser", ",", 
+     "sequence", ",", "keep", ",", "select", ",", "\[IndentingNewLine]", 
+     "peg", ",", "newGameButton", ",", "newGame", ",", "helper", ",", 
+     "\[IndentingNewLine]", "history", ",", 
+     RowBox[{"historyIterator", "=", "0"}], ",", "numbering", ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"numPegs", "=", "4"}], ",", 
+     RowBox[{"numPegsSetter", "=", "4"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"numColors", "=", "6"}], ",", 
+     RowBox[{"numColorsSetter", "=", "6"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"numGuesses", "=", "10"}], ",", 
+     RowBox[{"numGuessesSetter", "=", "10"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"guessed", "=", 
+      RowBox[{"Table", "[", 
+       RowBox[{"Null", ",", 
+        RowBox[{"{", 
+         RowBox[{"i", ",", "1", ",", "24"}], "}"}]}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"attempts", "=", "0"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+     "titleText", "=", "\"\<Mastermind: Can you Deduce the Code?\>\""}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"buttonText", "=", "\"\<Submit Guess\>\""}]}], "}"}], ",", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", "Initalization", "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"colors", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "Red", ",", "Green", ",", "Blue", ",", "Yellow", ",", "White", ",", 
+       "Black", ",", "Cyan", ",", "Magenta", ",", "Orange", ",", "Pink", ",", 
+       "Purple", ",", "Brown"}], "}"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"colorReplacements", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"i", "\[Rule]", 
+        RowBox[{"colors", "[", 
+         RowBox[{"[", "i", "]"}], "]"}]}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", "12"}], "}"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"numbering", "=", 
+     RowBox[{
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{"Style", "[", 
+         RowBox[{"i", ",", "20"}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"i", ",", "1", ",", "numGuesses"}], "}"}]}], "]"}], "~", 
+      "Join", "~", 
+      RowBox[{"Table", "[", 
+       RowBox[{"\"\<X\>\"", ",", 
+        RowBox[{"{", 
+         RowBox[{"i", ",", 
+          RowBox[{"numGuesses", "+", "1"}], ",", "24"}], "}"}]}], "]"}]}]}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"solution", "=", 
+     RowBox[{"RandomInteger", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"1", ",", "numColors"}], "}"}], ",", "numPegs"}], "]"}]}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"sequence", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"Mod", "[", 
+        RowBox[{"i", ",", "numColors", ",", "1"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", "numPegs"}], "}"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"keep", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{"False", ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", "numPegs"}], "}"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"select", "=", "1"}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", "Function", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"Clear", "[", 
+     RowBox[{"tryGuess", ",", " ", "repeatsQ"}], "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"tryGuess", "[", 
+      RowBox[{"guess_", ",", "solution_"}], "]"}], ":=", 
+     RowBox[{"Block", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "compare", ",", "checkGuess", ",", "checkSolution", ",", 
+         "guessColors", ",", "sequenceLength", ",", "i", ",", "j"}], "}"}], 
+       ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"sequenceLength", "=", 
+         RowBox[{"Length", "@", "solution"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"compare", "=", 
+         RowBox[{"Table", "[", 
+          RowBox[{"0", ",", 
+           RowBox[{"{", "sequenceLength", "}"}]}], "]"}]}], ";", 
+        RowBox[{"checkGuess", "=", 
+         RowBox[{"Table", "[", 
+          RowBox[{"0", ",", 
+           RowBox[{"{", "sequenceLength", "}"}]}], "]"}]}], ";", 
+        RowBox[{"checkSolution", "=", 
+         RowBox[{"Table", "[", 
+          RowBox[{"0", ",", 
+           RowBox[{"{", "sequenceLength", "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+         "Check", " ", "for", " ", "exact", " ", "matches", " ", "first"}], 
+         "*)"}], "\[IndentingNewLine]", 
+        RowBox[{"For", "[", 
+         RowBox[{
+          RowBox[{"i", "=", "1"}], ",", 
+          RowBox[{"i", "<=", "sequenceLength"}], ",", 
+          RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"checkGuess", "[", 
+               RowBox[{"[", "i", "]"}], "]"}], "\[Equal]", "0"}], " ", "&&", 
+             " ", 
+             RowBox[{
+              RowBox[{"guess", "[", 
+               RowBox[{"[", "i", "]"}], "]"}], "\[Equal]", 
+              RowBox[{"solution", "[", 
+               RowBox[{"[", "i", "]"}], "]"}]}]}], ",", "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"compare", "[", 
+               RowBox[{"[", "i", "]"}], "]"}], "=", "2"}], ";", 
+             RowBox[{
+              RowBox[{"checkGuess", "[", 
+               RowBox[{"[", "i", "]"}], "]"}], "=", "1"}], ";", 
+             RowBox[{
+              RowBox[{"checkSolution", "[", 
+               RowBox[{"[", "i", "]"}], "]"}], "=", "1"}]}]}], "]"}]}], "]"}],
+         ";", "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+         "Check", " ", "for", " ", "out", " ", "of", " ", "place", " ", 
+          "pegs"}], "*)"}], "\[IndentingNewLine]", 
+        RowBox[{"For", "[", 
+         RowBox[{
+          RowBox[{"i", "=", "1"}], ",", 
+          RowBox[{"i", "<=", "sequenceLength"}], ",", 
+          RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"For", "[", 
+           RowBox[{
+            RowBox[{"j", "=", "1"}], ",", 
+            RowBox[{"j", "<=", "sequenceLength"}], ",", 
+            RowBox[{"j", "++"}], ",", "\[IndentingNewLine]", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{"checkGuess", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "\[Equal]", "0"}], " ", "&&", 
+               RowBox[{
+                RowBox[{"checkSolution", "[", 
+                 RowBox[{"[", "j", "]"}], "]"}], "==", "0"}], " ", "&&", " ", 
+               RowBox[{
+                RowBox[{"guess", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "\[Equal]", " ", 
+                RowBox[{"solution", "[", 
+                 RowBox[{"[", "j", "]"}], "]"}]}]}], ",", 
+              "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"compare", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "=", "1"}], ";", 
+               RowBox[{
+                RowBox[{"checkGuess", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "=", "1"}], ";", 
+               RowBox[{
+                RowBox[{"checkSolution", "[", 
+                 RowBox[{"[", "j", "]"}], "]"}], "=", "1"}]}]}], "]"}]}], 
+           "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+        RowBox[{"guessColors", "=", 
+         RowBox[{"guess", "/.", "colorReplacements"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"compare", "=", 
+         RowBox[{
+          RowBox[{"Sort", "[", 
+           RowBox[{"compare", ",", "Greater"}], "]"}], "/.", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"2", "\[Rule]", "Black"}], ",", 
+            RowBox[{"1", "\[Rule]", "White"}], ",", 
+            RowBox[{"0", "\[Rule]", 
+             RowBox[{"GrayLevel", "[", ".5", "]"}]}]}], "}"}]}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"Generate", " ", "Graphics"}], "*)"}], "\[IndentingNewLine]", 
+        RowBox[{"ToExpression", "[", 
+         RowBox[{
+          RowBox[{
+          "\"\<Graphics[{EdgeForm[Thick],\>\"", "<>", "\[IndentingNewLine]", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"ToString", "[", 
+               RowBox[{"guessColors", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "]"}], "<>", 
+              "\"\<,\n\t\tRectangle[{\>\"", "<>", 
+              RowBox[{"ToString", "[", 
+               RowBox[{"i", "-", "1"}], "]"}], "<>", "\"\<,0}],\>\"", "<>", 
+              "\n", "\t\t", 
+              RowBox[{"ToString", "[", 
+               RowBox[{"compare", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "]"}], "<>", 
+              "\"\<,\n\t\tRectangle[\>\"", "<>", 
+              RowBox[{"ToString", "[", 
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"sequenceLength", "+", 
+                  RowBox[{".5", 
+                   RowBox[{"Floor", "[", 
+                    RowBox[{
+                    FractionBox["1", "2"], 
+                    RowBox[{"(", 
+                    RowBox[{"i", "+", "1"}], ")"}]}], "]"}]}]}], ",", 
+                 RowBox[{".5", 
+                  RowBox[{"Mod", "[", 
+                   RowBox[{"i", ",", "2"}], "]"}]}]}], "}"}], "]"}], "<>", 
+              "\[IndentingNewLine]", "\"\<,\>\"", "<>", 
+              RowBox[{"ToString", "[", 
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"sequenceLength", "+", 
+                  RowBox[{".5", 
+                   RowBox[{"Floor", "[", 
+                    RowBox[{
+                    FractionBox["1", "2"], 
+                    RowBox[{"(", 
+                    RowBox[{"i", "+", "1"}], ")"}]}], "]"}]}], "+", ".5"}], 
+                 ",", 
+                 RowBox[{
+                  RowBox[{".5", 
+                   RowBox[{"Mod", "[", 
+                    RowBox[{"i", ",", "2"}], "]"}]}], "+", ".5"}]}], "}"}], 
+               "]"}], "<>", "\"\<],\>\""}], ",", "\[IndentingNewLine]", 
+             RowBox[{"{", 
+              RowBox[{"i", ",", "1", ",", "sequenceLength"}], "}"}]}], "]"}], 
+           "<>", "\"\<Text[ ,{0,0}]},ImageSize->{250, \
+42},Background->White]\>\""}], ",", "TraditionalForm"}], "]"}]}]}], " ", 
+      RowBox[{"(*", "ToExpression", "*)"}], "\[IndentingNewLine]", "]"}]}], 
+    ";", 
+    RowBox[{"(*", "Block", "*)"}], "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"repeatsQ", "[", "list_", "]"}], ":=", 
+     RowBox[{"Block", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"i", ",", "j"}], "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"For", "[", 
+         RowBox[{
+          RowBox[{"i", "=", "1"}], ",", 
+          RowBox[{"i", "\[LessEqual]", 
+           RowBox[{"Length", "@", "list"}]}], ",", 
+          RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"For", "[", 
+           RowBox[{
+            RowBox[{"j", "=", "1"}], ",", 
+            RowBox[{"j", "\[LessEqual]", 
+             RowBox[{"Length", "@", "list"}]}], ",", 
+            RowBox[{"j", "++"}], ",", "\[IndentingNewLine]", 
+            RowBox[{"Which", "[", 
+             RowBox[{
+              RowBox[{"i", "\[Equal]", "j"}], ",", 
+              RowBox[{"Continue", ";", " ", "Print"}], ",", 
+              "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"list", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "==", 
+               RowBox[{"list", "[", 
+                RowBox[{"[", "j", "]"}], "]"}]}], ",", 
+              RowBox[{"Return", "[", "True", "]"}], ",", 
+              "\[IndentingNewLine]", "True", ",", "Continue"}], "]"}]}], 
+           "]"}]}], "\[IndentingNewLine]", "]"}], ";", 
+        RowBox[{"Return", "[", "False", "]"}]}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Dynamic", " ", "Objects"}], "*)"}], "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"peg", "[", "i_", "]"}], ":=", 
+     RowBox[{"Column", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"Checkbox", "[", 
+          RowBox[{"Dynamic", "[", 
+           RowBox[{"keep", "[", 
+            RowBox[{"[", "i", "]"}], "]"}], "]"}], "]"}], ",", 
+         RowBox[{"EventHandler", "[", 
+          RowBox[{
+           RowBox[{"Dynamic", "[", "\n", 
+            RowBox[{"Graphics", "[", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"sequence", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], "/.", "colorReplacements"}],
+                 ",", "\n", 
+                RowBox[{"Dynamic", "[", 
+                 RowBox[{"If", "[", 
+                  RowBox[{
+                   RowBox[{"select", " ", "\[Equal]", "i"}], ",", 
+                   RowBox[{"EdgeForm", "[", 
+                    RowBox[{"Thickness", "[", ".04", "]"}], "]"}], ",", 
+                   RowBox[{"EdgeForm", "[", 
+                    RowBox[{"Thickness", "[", ".08", "]"}], "]"}]}], "]"}], 
+                 "]"}], ",", "\n", 
+                RowBox[{"Rectangle", "[", "]"}]}], "}"}], ",", 
+              RowBox[{"ImageSize", "->", "40"}]}], "]"}], "]"}], ",", "\n", 
+           RowBox[{"{", 
+            RowBox[{"\"\<MouseClicked\>\"", "\[RuleDelayed]", 
+             RowBox[{"(", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"sequence", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], "\[Equal]", "numColors"}], 
+                ",", 
+                RowBox[{
+                 RowBox[{"sequence", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], "=", "1"}], ",", 
+                RowBox[{
+                 RowBox[{"sequence", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], "+=", "1"}]}], "]"}], 
+              ")"}]}], "}"}]}], "]"}]}], "\[IndentingNewLine]", "}"}], ",", 
+       RowBox[{"Alignment", "->", "Center"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"sequenceGuesser", "=", 
+     RowBox[{"Dynamic", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"Panel", "[", 
+        RowBox[{"Grid", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"peg", "[", "i", "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"i", ",", "1", ",", "numPegs"}], "}"}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"Button", "[", 
+              RowBox[{
+              "buttonText", ",", "submitGuess", ",", "\[IndentingNewLine]", 
+               RowBox[{"ImageSize", "\[Rule]", "Full"}]}], "]"}], ",", 
+             "SpanFromLeft"}], "}"}]}], "}"}], "]"}], "\[IndentingNewLine]", 
+        "]"}], ",", 
+       RowBox[{"TrackedSymbols", "\[RuleDelayed]", 
+        RowBox[{"{", 
+         RowBox[{
+         "numPegs", ",", "numColors", ",", "buttonText", ",", "sequence"}], 
+         "}"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"history", ":=", 
+     RowBox[{"Dynamic", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"Grid", "[", 
+        RowBox[{
+         RowBox[{"Thread", "[", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"numbering", "[", 
+             RowBox[{"[", 
+              RowBox[{"1", ";;", "8"}], "]"}], "]"}], ",", 
+            RowBox[{"guessed", "[", 
+             RowBox[{"[", 
+              RowBox[{"1", ";;", "8"}], "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"numbering", "[", 
+             RowBox[{"[", 
+              RowBox[{"9", ";;", "16"}], "]"}], "]"}], ",", 
+            RowBox[{"guessed", "[", 
+             RowBox[{"[", 
+              RowBox[{"9", ";;", "16"}], "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"numbering", "[", 
+             RowBox[{"[", 
+              RowBox[{"17", ";;", "24"}], "]"}], "]"}], ",", 
+            RowBox[{"guessed", "[", 
+             RowBox[{"[", 
+              RowBox[{"17", ";;", "24"}], "]"}], "]"}]}], "}"}], "]"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"ItemSize", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"3", ",", 
+              RowBox[{"Scaled", "[", ".28", "]"}], ",", "3", ",", 
+              RowBox[{"Scaled", "[", ".28", "]"}], ",", "3", ",", 
+              RowBox[{"Scaled", "[", ".28", "]"}]}], "}"}], ",", "3.5"}], 
+           "}"}]}], ",", "\[IndentingNewLine]", 
+         RowBox[{"Alignment", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"Center", ",", "Center"}], "}"}]}], ",", 
+         RowBox[{"Frame", "\[Rule]", "All"}]}], "]"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"TrackedSymbols", "\[RuleDelayed]", 
+        RowBox[{"{", 
+         RowBox[{"guessed", ",", "numGuesses", ",", "historyIterator"}], 
+         "}"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"helper", "=", 
+     RowBox[{"Panel", "[", 
+      RowBox[{
+       RowBox[{"Grid", "[", 
+        RowBox[{"Partition", "[", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"Flatten", "@", "\[IndentingNewLine]", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"Graphics", "[", 
+                RowBox[{
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{"colors", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], ",", 
+                   RowBox[{"EdgeForm", "[", "Thick", "]"}], ",", 
+                   RowBox[{"Rectangle", "[", "]"}]}], "}"}], ",", 
+                 RowBox[{"ImageSize", "\[Rule]", "20"}]}], "]"}], ",", 
+               RowBox[{"InputField", "[", 
+                RowBox[{"Null", ",", 
+                 RowBox[{"FieldSize", "\[Rule]", "1"}]}], "]"}]}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"i", ",", "1", ",", "12"}], "}"}]}], "]"}]}], ",", 
+          "8"}], "]"}], "]"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"ImageSize", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"250", ",", "110"}], "}"}]}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"In", " ", "Game", " ", "Events", " ", "and", " ", "Logic"}], 
+     "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"newGame", ":=", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"playing", "=", "True"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"numPegs", "=", "numPegsSetter"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"numColors", "=", "numColorsSetter"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"numGuesses", "=", "numGuessesSetter"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"guessed", "=", 
+        RowBox[{"Table", "[", 
+         RowBox[{"\"\< \>\"", ",", 
+          RowBox[{"{", 
+           RowBox[{"i", ",", "1", ",", "25"}], "}"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"historyIterator", "=", "0"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"twoPlayerBoole", "==", "True"}], ",", 
+         RowBox[{
+          RowBox[{"titleText", "=", "\"\<Who is the True Mastermind?\>\""}], 
+          ";", 
+          RowBox[{"numGuessesSetter", "=", "25"}], ";", 
+          RowBox[{"numGuesses", "=", "25"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"Which", "[", 
+           RowBox[{
+            RowBox[{"twoPlayer", "==", "0"}], ",", 
+            RowBox[{
+             RowBox[{"twoPlayer", "=", "1"}], ";", 
+             RowBox[{"buttonText", "=", "\"\<Player 1 Enter Code\>\""}], ";", 
+             RowBox[{"twoPlayerSelect", "=", "True"}]}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"twoPlayer", "==", "1"}], ",", 
+            RowBox[{
+             RowBox[{"twoPlayer", "=", "2"}], ";", 
+             RowBox[{"buttonText", "=", "\"\<Player 2 Enter Code\>\""}], ";", 
+             RowBox[{"twoPlayerSelect", "=", "True"}]}]}], "]"}]}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"twoPlayer", "=", "0"}], ";", 
+          RowBox[{"twoPlayerSelect", "=", "False"}], ";", 
+          RowBox[{
+          "titleText", "=", "\"\<Mastermind: Can you Deduce the Code?\>\""}], 
+          ";", 
+          RowBox[{"buttonText", "=", "\"\<Submit Guess\>\""}]}]}], "]"}], ";",
+        "\[IndentingNewLine]", 
+       RowBox[{"numbering", "=", 
+        RowBox[{
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"Style", "[", 
+            RowBox[{"i", ",", "20"}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"i", ",", "1", ",", "numGuesses"}], "}"}]}], "]"}], "~", 
+         "Join", "~", 
+         RowBox[{"Table", "[", 
+          RowBox[{"\"\<X\>\"", ",", 
+           RowBox[{"{", 
+            RowBox[{"i", ",", 
+             RowBox[{"numGuesses", "+", "1"}], ",", "24"}], "}"}]}], 
+          "]"}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"attempts", "=", "0"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"sequence", "=", 
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{"Mod", "[", 
+           RowBox[{"i", ",", "numColors", ",", "1"}], "]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"i", ",", "1", ",", "numPegs"}], "}"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"keep", "=", 
+        RowBox[{"Table", "[", 
+         RowBox[{"False", ",", 
+          RowBox[{"{", 
+           RowBox[{"i", ",", "1", ",", "numPegs"}], "}"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"solution", "=", 
+        RowBox[{"RandomInteger", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"1", ",", "numColors"}], "}"}], ",", "numPegs"}], "]"}]}], 
+       ";", "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"numPegs", ">", "numColors"}], ",", 
+         RowBox[{"repeatsBoole", "=", "False"}]}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{"repeatsBoole", ",", 
+         RowBox[{"While", "[", 
+          RowBox[{
+           RowBox[{"repeatsQ", "[", "solution", "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"solution", "=", 
+            RowBox[{"RandomInteger", "[", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"1", ",", "numColors"}], "}"}], ",", "numPegs"}], 
+             "]"}]}]}], "]"}]}], "]"}]}], ")"}]}], ";", "\[IndentingNewLine]",
+     "\[IndentingNewLine]", 
+    RowBox[{"submitGuess", ":=", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"playing", "\[Equal]", "True"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"Which", "[", 
+        RowBox[{
+         RowBox[{"twoPlayerSelect", "\[Equal]", "True"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"twoPlayerSelect", "=", "False"}], ";", 
+          RowBox[{"solution", "=", "sequence"}], ";", 
+          RowBox[{"sequence", "=", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"Mod", "[", 
+              RowBox[{"i", ",", "numColors", ",", "1"}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"i", ",", "1", ",", "numPegs"}], "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Which", "[", 
+           RowBox[{
+            RowBox[{"twoPlayer", "==", "1"}], ",", 
+            RowBox[{"buttonText", "=", "\"\<Player 2: Submit Guess\>\""}], 
+            ",", 
+            RowBox[{"twoPlayer", "\[Equal]", "2"}], ",", 
+            RowBox[{"buttonText", "=", "\"\<Player 1: Submit Guess\>\""}]}], 
+           "]"}]}], ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"sequence", "\[Equal]", "solution"}], ",", 
+         RowBox[{
+          RowBox[{"playing", "=", "False"}], ";", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"guessed", "[", 
+            RowBox[{"[", 
+             RowBox[{
+              RowBox[{"Mod", "[", 
+               RowBox[{"attempts", ",", "24"}], "]"}], "+", "1"}], "]"}], 
+            "]"}], "=", 
+           RowBox[{"tryGuess", "[", 
+            RowBox[{"sequence", ",", "solution"}], "]"}]}], ";", 
+          RowBox[{"titleText", "=", "\"\<Congratulations!\>\""}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"buttonText", "=", "\"\<Press New Game to Play Again\>\""}],
+           ";", "\[IndentingNewLine]", 
+          RowBox[{"Which", "[", 
+           RowBox[{
+            RowBox[{"twoPlayer", "\[Equal]", "1"}], ",", 
+            RowBox[{
+             RowBox[{"player1Score", "=", "attempts"}], ";", 
+             RowBox[{
+             "buttonText", "=", "\"\<Press New Game to Continue\>\""}]}], ",",
+             "\[IndentingNewLine]", 
+            RowBox[{"twoPlayer", "\[Equal]", "2"}], ",", 
+            RowBox[{
+             RowBox[{"twoPlayer", "=", "0"}], ";", "\[IndentingNewLine]", 
+             RowBox[{"Which", "[", 
+              RowBox[{
+               RowBox[{"player1Score", "<", "attempts"}], ",", 
+               RowBox[{
+               "titleText", "=", "\"\<Player 2 is the Mastermind\>\""}], ",", 
+               "\[IndentingNewLine]", 
+               RowBox[{"player1Score", ">", "attempts"}], ",", 
+               RowBox[{
+               "titleText", "=", "\"\<Player 1 is the Mastermind\>\""}], ",", 
+               "\[IndentingNewLine]", 
+               RowBox[{"player1Score", "\[Equal]", "attempts"}], ",", 
+               RowBox[{"titleText", "=", "\"\<Tie Match! Play Again!\>\""}]}],
+               "]"}]}]}], "]"}]}], ",", "\[IndentingNewLine]", 
+         "\[IndentingNewLine]", 
+         RowBox[{"numGuesses", "==", "25"}], ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"guessed", "[", 
+            RowBox[{"[", 
+             RowBox[{
+              RowBox[{"Mod", "[", 
+               RowBox[{"attempts", ",", "24"}], "]"}], "+", "1"}], "]"}], 
+            "]"}], "=", 
+           RowBox[{"tryGuess", "[", 
+            RowBox[{"sequence", ",", "solution"}], "]"}]}], ";", 
+          RowBox[{"attempts", "++"}], ";", 
+          RowBox[{"Which", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"Mod", "[", 
+               RowBox[{"attempts", ",", "24"}], "]"}], "\[Equal]", "0"}], "&&",
+              " ", 
+             RowBox[{"attempts", ">", "0"}]}], ",", 
+            RowBox[{
+             RowBox[{"historyIterator", "++"}], ";", 
+             RowBox[{
+              RowBox[{"guessed", "[", 
+               RowBox[{"[", 
+                RowBox[{"1", ";;", "8"}], "]"}], "]"}], "=", "Null"}], ";", 
+             "\[IndentingNewLine]", " ", 
+             RowBox[{
+              RowBox[{"numbering", "[", 
+               RowBox[{"[", 
+                RowBox[{"1", ";;", "8"}], "]"}], "]"}], "=", 
+              RowBox[{"Table", "[", 
+               RowBox[{
+                RowBox[{"Style", "[", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"24", "*", "historyIterator"}], "+", "i"}], ",", 
+                  "20"}], "]"}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"i", ",", "1", ",", "8"}], "}"}]}], "]"}]}]}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{"Mod", "[", 
+              RowBox[{"attempts", ",", "24"}], "]"}], "\[Equal]", "8"}], ",", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"guessed", "[", 
+               RowBox[{"[", 
+                RowBox[{"9", ";;", "16"}], "]"}], "]"}], "=", "Null"}], ";", 
+             " ", 
+             RowBox[{
+              RowBox[{"numbering", "[", 
+               RowBox[{"[", 
+                RowBox[{"9", ";;", "16"}], "]"}], "]"}], "=", 
+              RowBox[{"Table", "[", 
+               RowBox[{
+                RowBox[{"Style", "[", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"24", "*", "historyIterator"}], "+", "i"}], ",", 
+                  "20"}], "]"}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"i", ",", "9", ",", "16"}], "}"}]}], "]"}]}]}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{"Mod", "[", 
+              RowBox[{"attempts", ",", "24"}], "]"}], "\[Equal]", "16"}], ",", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"guessed", "[", 
+               RowBox[{"[", 
+                RowBox[{"17", ";;", "24"}], "]"}], "]"}], "=", "Null"}], ";", 
+             " ", 
+             RowBox[{
+              RowBox[{"numbering", "[", 
+               RowBox[{"[", 
+                RowBox[{"17", ";;", "24"}], "]"}], "]"}], "=", 
+              RowBox[{"Table", "[", 
+               RowBox[{
+                RowBox[{"Style", "[", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"24", "*", "historyIterator"}], "+", "i"}], ",", 
+                  "20"}], "]"}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"i", ",", "17", ",", "24"}], "}"}]}], "]"}]}]}]}], 
+           "]"}]}], ",", "\[IndentingNewLine]", "\[IndentingNewLine]", "True",
+          ",", 
+         RowBox[{"Which", "[", 
+          RowBox[{
+           RowBox[{"attempts", "<", 
+            RowBox[{"numGuesses", "-", "1"}]}], ",", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"guessed", "[", 
+              RowBox[{"[", 
+               RowBox[{"attempts", "+", "1"}], "]"}], "]"}], "=", 
+             RowBox[{"tryGuess", "[", 
+              RowBox[{"sequence", ",", "solution"}], "]"}]}], ";", " ", 
+            RowBox[{"attempts", "++"}]}], ",", "\[IndentingNewLine]", 
+           RowBox[{"attempts", "==", 
+            RowBox[{"numGuesses", "-", "1"}]}], ",", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"guessed", "[", 
+              RowBox[{"[", 
+               RowBox[{"attempts", "+", "1"}], "]"}], "]"}], "=", 
+             RowBox[{"tryGuess", "[", 
+              RowBox[{"sequence", ",", "solution"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", "\t", 
+            RowBox[{"sequence", "=", "solution"}], ";", 
+            RowBox[{"buttonText", "=", "\"\<Correct Solution\>\""}], ";", 
+            RowBox[{"playing", "=", "False"}]}]}], "]"}]}], 
+        "\[IndentingNewLine]", "]"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Game", " ", "Board"}], "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"EventHandler", "[", 
+     RowBox[{
+      RowBox[{"Panel", "[", 
+       RowBox[{
+        RowBox[{"Deploy", "@", 
+         RowBox[{"Panel", "[", 
+          RowBox[{
+           RowBox[{"Grid", "[", 
+            RowBox[{"{", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"Style", "[", 
+                 RowBox[{
+                  RowBox[{"Dynamic", "[", "titleText", "]"}], ",", 
+                  "\"\<Title\>\""}], "]"}], ",", "SpanFromLeft"}], "}"}], ",",
+               "\[IndentingNewLine]", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"Pane", "[", "\"\< \>\"", "]"}], ",", 
+                "SpanFromLeft"}], "}"}], ",", "\[IndentingNewLine]", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"Panel", "@", 
+                 RowBox[{"Column", "[", 
+                  RowBox[{
+                   RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"Button", "[", 
+                    RowBox[{"\"\<New Game\>\"", ",", "newGame"}], "]"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"Labeled", "[", 
+                    RowBox[{
+                    RowBox[{"Checkbox", "[", 
+                    RowBox[{"Dynamic", "[", "twoPlayerBoole", "]"}], "]"}], 
+                    ",", "\"\<2 Player\>\"", ",", "Left"}], "]"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"Pane", "[", "\"\< \>\"", "]"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"Pane", "[", "\"\<Number of Pegs\>\"", "]"}], ",",
+                     "\[IndentingNewLine]", 
+                    RowBox[{"PopupMenu", "[", 
+                    RowBox[{
+                    RowBox[{"Dynamic", "[", "numPegsSetter", "]"}], ",", 
+                    RowBox[{"Table", "[", 
+                    RowBox[{"i", ",", 
+                    RowBox[{"{", 
+                    RowBox[{"i", ",", "1", ",", "10"}], "}"}]}], "]"}]}], 
+                    "]"}], ",", "\[IndentingNewLine]", 
+                    RowBox[{"Pane", "[", "\"\< \>\"", "]"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"Pane", "[", "\"\<Number of Colors\>\"", "]"}], 
+                    ",", "\[IndentingNewLine]", 
+                    RowBox[{"PopupMenu", "[", 
+                    RowBox[{
+                    RowBox[{"Dynamic", "[", "numColorsSetter", "]"}], ",", 
+                    RowBox[{"Table", "[", 
+                    RowBox[{"i", ",", 
+                    RowBox[{"{", 
+                    RowBox[{"i", ",", "1", ",", "12"}], "}"}]}], "]"}]}], 
+                    "]"}], ",", "\[IndentingNewLine]", 
+                    RowBox[{"Labeled", "[", 
+                    RowBox[{
+                    RowBox[{"Checkbox", "[", 
+                    RowBox[{"Dynamic", "[", "repeatsBoole", "]"}], "]"}], 
+                    ",", "\"\<No Repeated Colors\>\"", ",", "Left"}], "]"}], 
+                    ",", "\[IndentingNewLine]", 
+                    RowBox[{"Pane", "[", "\"\< \>\"", "]"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"Pane", "[", "\"\<Number of Guesses\>\"", "]"}], 
+                    ",", "\[IndentingNewLine]", 
+                    RowBox[{"PopupMenu", "[", 
+                    RowBox[{
+                    RowBox[{"Dynamic", "[", "numGuessesSetter", "]"}], ",", 
+                    RowBox[{
+                    RowBox[{"Table", "[", 
+                    RowBox[{"i", ",", 
+                    RowBox[{"{", 
+                    RowBox[{"i", ",", "1", ",", "24"}], "}"}]}], "]"}], "~", 
+                    "Join", "~", 
+                    RowBox[{"{", 
+                    RowBox[{"25", "\[Rule]", "\"\<\[Infinity]\>\""}], 
+                    "}"}]}]}], "]"}]}], "}"}], ",", "Center"}], "]"}]}], 
+                RowBox[{"(*", 
+                 RowBox[{"End", " ", "Column"}], "*)"}], ",", "history"}], 
+               "}"}], ",", "\[IndentingNewLine]", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"Row", "[", 
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{"Panel", "[", 
+                    RowBox[{"\"\< \>\"", ",", 
+                    RowBox[{"Appearance", "->", "\"\<Frameless\>\""}], ",", 
+                    RowBox[{"ImageSize", "\[Rule]", "255"}]}], "]"}], ",", 
+                   "sequenceGuesser", ",", 
+                   RowBox[{"Panel", "[", 
+                    RowBox[{"\"\<   \>\"", ",", 
+                    RowBox[{"Appearance", "->", "\"\<Frameless\>\""}]}], 
+                    "]"}], ",", "helper"}], "}"}], "]"}], ",", 
+                "SpanFromLeft"}], "}"}]}], "}"}], "]"}], ",", 
+           RowBox[{"ImageSize", "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{"1100", ",", "580"}], "}"}]}]}], "\[IndentingNewLine]", 
+          "]"}]}], ",", 
+        RowBox[{"Background", "\[Rule]", "Black"}]}], "]"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"\"\<KeyDown\>\"", ",", "\"\<t\>\""}], "}"}], 
+         "\[RuleDelayed]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"twoPlayerBoole", "\[Equal]", "False"}], ",", 
+           RowBox[{"twoPlayerBoole", "=", "True"}], ",", 
+           RowBox[{"twoPlayerBoole", "=", "False"}]}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"\"\<KeyDown\>\"", ",", "\"\<r\>\""}], "}"}], 
+         "\[RuleDelayed]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"repeatsBoole", "\[Equal]", "False"}], ",", 
+           RowBox[{"repeatsBoole", "=", "True"}], ",", 
+           RowBox[{"repeatsBoole", "=", "False"}]}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"\"\<KeyDown\>\"", ",", "\"\<p\>\""}], "}"}], 
+         "\[RuleDelayed]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"numPegsSetter", "\[Equal]", "10"}], ",", 
+           RowBox[{"numPegsSetter", "=", "1"}], ",", 
+           RowBox[{"numPegsSetter", "++"}]}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"\"\<KeyDown\>\"", ",", "\"\<c\>\""}], "}"}], 
+         "\[RuleDelayed]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"numColorsSetter", "\[Equal]", "12"}], ",", 
+           RowBox[{"numColorsSetter", "=", "1"}], ",", 
+           RowBox[{"numColorsSetter", "++"}]}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"\"\<KeyDown\>\"", ",", "\"\<g\>\""}], "}"}], 
+         "\[RuleDelayed]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"numGuessesSetter", "\[Equal]", "25"}], ",", 
+           RowBox[{"numGuessesSetter", "=", "1"}], ",", 
+           RowBox[{"numGuessesSetter", "++"}]}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"\"\<KeyDown\>\"", ",", "\"\<k\>\""}], "}"}], 
+         "\[RuleDelayed]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"keep", "[", 
+             RowBox[{"[", "select", "]"}], "]"}], "\[Equal]", "False"}], ",", 
+           RowBox[{
+            RowBox[{"keep", "[", 
+             RowBox[{"[", "select", "]"}], "]"}], "=", "True"}], ",", 
+           RowBox[{
+            RowBox[{"keep", "[", 
+             RowBox[{"[", "select", "]"}], "]"}], "=", "False"}]}], "]"}]}], 
+        ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<EscapeKeyDown\>\"", "\[RuleDelayed]", "newGame"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"\"\<RightArrowKeyDown\>\"", "\[RuleDelayed]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"select", "==", "numPegs"}], ",", 
+           RowBox[{"select", "=", "1"}], ",", 
+           RowBox[{"select", "+=", "1"}]}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"\"\<LeftArrowKeyDown\>\"", "\[RuleDelayed]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"select", "\[Equal]", "1"}], ",", 
+           RowBox[{"select", "=", "numPegs"}], ",", 
+           RowBox[{"select", "-=", "1"}]}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"\"\<UpArrowKeyDown\>\"", "\[RuleDelayed]", 
+         RowBox[{"If", "[", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"keep", "[", 
+              RowBox[{"[", "select", "]"}], "]"}], "\[Equal]", "False"}], " ",
+             "&&", " ", 
+            RowBox[{"playing", "\[Equal]", "True"}]}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"sequence", "[", 
+               RowBox[{"[", "select", "]"}], "]"}], "==", "numColors"}], ",", 
+             RowBox[{
+              RowBox[{"sequence", "[", 
+               RowBox[{"[", "select", "]"}], "]"}], "=", "1"}], ",", 
+             RowBox[{
+              RowBox[{"sequence", "[", 
+               RowBox[{"[", "select", "]"}], "]"}], "+=", "1"}]}], "]"}]}], 
+          "]"}]}], ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<DownArrowKeyDown\>\"", "\[RuleDelayed]", 
+         RowBox[{"If", "[", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"keep", "[", 
+              RowBox[{"[", "select", "]"}], "]"}], "\[Equal]", "False"}], "&&",
+             " ", 
+            RowBox[{"playing", "\[Equal]", "True"}]}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"sequence", "[", 
+               RowBox[{"[", "select", "]"}], "]"}], "\[Equal]", "1"}], ",", 
+             RowBox[{
+              RowBox[{"sequence", "[", 
+               RowBox[{"[", "select", "]"}], "]"}], "=", "numColors"}], ",", 
+             RowBox[{
+              RowBox[{"sequence", "[", 
+               RowBox[{"[", "select", "]"}], "]"}], "-=", "1"}]}], "]"}]}], 
+          "]"}]}], ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<ReturnKeyDown\>\"", "\[RuleDelayed]", "submitGuess"}]}], 
+       "}"}]}], "]"}]}]}], "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{
+  3.5161663044778*^9, {3.5161663705906*^9, 3.5161663837414*^9}, {
+   3.5161664291842003`*^9, 3.5161664557978*^9}, {3.516166507153*^9, 
+   3.5161665177766*^9}, {3.516194622159*^9, 3.516194652361*^9}, {
+   3.516194761406*^9, 3.5161947647679996`*^9}, {3.5161948338310003`*^9, 
+   3.516194870049*^9}, {3.516194995734*^9, 3.516195028243*^9}, {
+   3.516195067163*^9, 3.516195124646*^9}, {3.516195324428*^9, 
+   3.5161953263789997`*^9}, {3.5161954054040003`*^9, 3.516195405538*^9}, {
+   3.51619546698*^9, 3.5161954747679996`*^9}, {3.5162219275150003`*^9, 
+   3.516221951677*^9}, {3.516222055605*^9, 3.516222056093*^9}, {
+   3.516222113693*^9, 3.516222113832*^9}, {3.5162229562539997`*^9, 
+   3.516222974109*^9}, {3.516223012249*^9, 3.516223018723*^9}, {
+   3.516223416418*^9, 3.516223427796*^9}, {3.5162342314820004`*^9, 
+   3.516234297524*^9}, {3.5162343625109997`*^9, 3.516234374326*^9}, {
+   3.516234869682*^9, 3.516234886799*^9}, {3.516235078352*^9, 
+   3.516235100076*^9}, {3.516235224784*^9, 3.516235319957*^9}, {
+   3.516235435476*^9, 3.516235436842*^9}, {3.516235488755*^9, 
+   3.5162357174040003`*^9}, {3.5162357514049997`*^9, 3.516235902852*^9}, {
+   3.5162359335150003`*^9, 3.516235938705*^9}, {3.51623600121*^9, 
+   3.5162360731730003`*^9}, {3.516236208701*^9, 3.516236212035*^9}, {
+   3.5162362581429996`*^9, 3.516236298892*^9}, {3.5162364317869997`*^9, 
+   3.5162364326029997`*^9}, {3.516236500427*^9, 3.516236589039*^9}, {
+   3.516236659163*^9, 3.516236700267*^9}, {3.5162368884370003`*^9, 
+   3.5162369102279997`*^9}, {3.516237737769*^9, 3.5162377420480003`*^9}, {
+   3.516237821258*^9, 3.516237832528*^9}, {3.5162378708269997`*^9, 
+   3.516237953826*^9}, {3.516237995455*^9, 3.516238030347*^9}, {
+   3.516238091264*^9, 3.516238093818*^9}, {3.5162381377279997`*^9, 
+   3.5162382016359997`*^9}, {3.516238251283*^9, 3.516238263035*^9}, {
+   3.5162382956470003`*^9, 3.5162383779890003`*^9}, {3.516238430597*^9, 
+   3.516238448358*^9}, {3.516238501428*^9, 3.5162385225220003`*^9}, {
+   3.516238642124*^9, 3.5162386457200003`*^9}, {3.5162387730769997`*^9, 
+   3.51623880565*^9}, {3.516238901821*^9, 3.516238923842*^9}, {
+   3.5162389914820004`*^9, 3.516239177602*^9}, {3.516239269341*^9, 
+   3.516239462156*^9}, {3.516239518356*^9, 3.516239523323*^9}, {
+   3.5162395658570004`*^9, 3.5162395717460003`*^9}, 3.516239631557*^9, {
+   3.5162400772200003`*^9, 3.516240135433*^9}, {3.516240190222*^9, 
+   3.51624031604*^9}, {3.516240436217*^9, 3.516240478729*^9}, {
+   3.516240542551*^9, 3.516240543007*^9}, {3.5162405835220003`*^9, 
+   3.516240706523*^9}, {3.5162408366610003`*^9, 3.5162408422539997`*^9}, {
+   3.5162409957460003`*^9, 3.5162411734779997`*^9}, {3.5162412250769997`*^9, 
+   3.516241266617*^9}, {3.516241329849*^9, 3.516241329976*^9}, {
+   3.5162413688859997`*^9, 3.516241379781*^9}, {3.5162414162530003`*^9, 
+   3.516241511387*^9}, {3.5162415504379997`*^9, 3.516241582413*^9}, {
+   3.5162416340179996`*^9, 3.516241642316*^9}, {3.516241728528*^9, 
+   3.516241760951*^9}, {3.51624179184*^9, 3.516241792074*^9}, {
+   3.516241851825*^9, 3.5162418615620003`*^9}, {3.5162419555369997`*^9, 
+   3.516241958237*^9}, {3.516241988934*^9, 3.516242000111*^9}, {
+   3.5162424995889997`*^9, 3.516242499833*^9}, {3.5162426238719997`*^9, 
+   3.516242633395*^9}, 3.516242684738*^9, {3.516242725811*^9, 
+   3.516242743041*^9}, {3.516242961811*^9, 3.516242995818*^9}, {
+   3.516243058909*^9, 3.516243059067*^9}, {3.5162432088120003`*^9, 
+   3.516243334225*^9}, {3.516243367564*^9, 3.5162433879449997`*^9}, {
+   3.516243420914*^9, 3.516243474592*^9}, {3.516243537083*^9, 
+   3.516243546058*^9}, {3.516243585559*^9, 3.5162436088710003`*^9}, {
+   3.516243662152*^9, 3.516243664087*^9}, {3.516243792097*^9, 
+   3.516243797355*^9}, 3.516243866008*^9, {3.516244101645*^9, 
+   3.516244111176*^9}, {3.516244298038*^9, 3.516244381075*^9}, {
+   3.5162444118*^9, 3.51624443844*^9}, 3.5162445243269997`*^9, {
+   3.5162445630369997`*^9, 3.516244616764*^9}, {3.51624499116*^9, 
+   3.5162449930699997`*^9}, {3.5162451878599997`*^9, 
+   3.5162451905620003`*^9}, {3.516245614299*^9, 3.516245650329*^9}, {
+   3.5162457610220003`*^9, 3.516245793395*^9}, {3.5162458287060003`*^9, 
+   3.51624584515*^9}, {3.5162458998640003`*^9, 3.516245922648*^9}, 
+   3.516246019888*^9, {3.516246057442*^9, 3.516246195785*^9}, {
+   3.51624648292*^9, 3.5162464852*^9}, {3.5162465671689997`*^9, 
+   3.5162465984960003`*^9}, {3.51624671638*^9, 3.516246743073*^9}, {
+   3.516246894558*^9, 3.516246902528*^9}, {3.516246953791*^9, 
+   3.516246953907*^9}, {3.5162480139440002`*^9, 3.516248101256*^9}, {
+   3.5162481510150003`*^9, 3.5162481631610003`*^9}, {3.516277791797*^9, 
+   3.516277793117*^9}, {3.516278002866*^9, 3.5162780072939997`*^9}, 
+   3.516278103748*^9, {3.516278218127*^9, 3.516278226817*^9}, {
+   3.516278718076*^9, 3.51627874435*^9}, 3.516278784862*^9, {
+   3.516295388602824*^9, 3.5162954648048244`*^9}, {3.516295508564824*^9, 
+   3.5162955463458242`*^9}, {3.5162955907838244`*^9, 
+   3.5162956401598244`*^9}, {3.516295689274824*^9, 3.5162957056008244`*^9}, {
+   3.5162957628158245`*^9, 3.516295782425824*^9}, {3.5162958431838245`*^9, 
+   3.5162958627368245`*^9}, {3.5162959644458246`*^9, 
+   3.5162959791268244`*^9}, {3.5162960406448245`*^9, 
+   3.5162960652578244`*^9}, {3.5162961840238247`*^9, 3.516296265102824*^9}, 
+   3.516296316201824*^9, {3.5162963734238243`*^9, 3.5162964390598245`*^9}, {
+   3.5162964769228244`*^9, 3.5162965791108246`*^9}, {3.5162966734628243`*^9, 
+   3.5162966937108245`*^9}, {3.5162967262428246`*^9, 
+   3.5162967599788246`*^9}, {3.5162968049038243`*^9, 3.516296851057824*^9}, {
+   3.5162969399268246`*^9, 3.5162969671068244`*^9}, 3.516297030314824*^9, {
+   3.516297130163824*^9, 3.5162971743088245`*^9}, {3.5162972757828245`*^9, 
+   3.5162973402508245`*^9}, {3.516297402854824*^9, 3.5162974673778243`*^9}, 
+   3.5162975306518245`*^9, {3.5162978045258245`*^9, 3.5162978344488244`*^9}, {
+   3.5162978670378246`*^9, 3.5162978692388244`*^9}, {3.5162979154498243`*^9, 
+   3.5162979168248243`*^9}, {3.5162979852988243`*^9, 3.5162979942178245`*^9}, 
+   3.516298052078824*^9, {3.5162981720858245`*^9, 3.5162982284308243`*^9}, {
+   3.5162982594348245`*^9, 3.5162983628068247`*^9}, {3.5162984082288246`*^9, 
+   3.516298409510824*^9}, {3.5162985106188245`*^9, 3.5162985309218245`*^9}, {
+   3.5162985612618246`*^9, 3.5162986270268245`*^9}, {3.5162986723888245`*^9, 
+   3.5162987140618243`*^9}, {3.5162988184218245`*^9, 
+   3.5162988378088245`*^9}, {3.5162989063188243`*^9, 
+   3.5162989142188244`*^9}, {3.5162990571888247`*^9, 3.5162990582388244`*^9}, 
+   3.516299130003824*^9, {3.516302156264*^9, 3.5163021588269997`*^9}, {
+   3.516302200347*^9, 3.516302216458*^9}, {3.516302356962*^9, 
+   3.516302373676*^9}, {3.5163031349630003`*^9, 3.516303164075*^9}, {
+   3.5163032765360003`*^9, 3.516303320755*^9}, {3.5163033564379997`*^9, 
+   3.5163033965439997`*^9}, {3.516303461718*^9, 3.516303463139*^9}, {
+   3.5163035697650003`*^9, 3.516303570073*^9}, {3.516303841134*^9, 
+   3.516303844084*^9}, {3.51630388629*^9, 3.516303886712*^9}, {
+   3.5163041126870003`*^9, 3.516304319078*^9}, {3.516304490538*^9, 
+   3.5163045563780003`*^9}, {3.516304640387*^9, 3.5163046451870003`*^9}, {
+   3.5163048231099997`*^9, 3.516304865862*^9}, {3.5163050311219997`*^9, 
+   3.5163050540480003`*^9}, {3.516305091024*^9, 3.5163051037019997`*^9}, {
+   3.516305142234*^9, 3.51630515975*^9}, {3.516305233551*^9, 
+   3.516305272343*^9}, {3.5163053609189997`*^9, 3.516305391102*^9}, {
+   3.516305451426*^9, 3.5163054516879997`*^9}, {3.516321437587*^9, 
+   3.516321470741*^9}, {3.516321515733*^9, 3.516321607914*^9}, {
+   3.5163221094309998`*^9, 3.516322122884*^9}, {3.516322382139*^9, 
+   3.516322473873*^9}, {3.516322504104*^9, 3.51632254851*^9}, {
+   3.516322589538*^9, 3.5163225922060003`*^9}, {3.5163226276429996`*^9, 
+   3.5163226635030003`*^9}, {3.51632272941*^9, 3.516322754446*^9}, {
+   3.516322804399*^9, 3.516322810907*^9}, {3.516322863543*^9, 
+   3.516322863731*^9}, {3.5163248337720003`*^9, 3.516324836125*^9}, {
+   3.516325000649*^9, 3.51632502096*^9}, {3.516326005281*^9, 
+   3.516326038425*^9}, 3.516326189014*^9, {3.5163270269119997`*^9, 
+   3.51632708027*^9}, 3.516327114623*^9, {3.516327285784*^9, 
+   3.5163272938059998`*^9}, {3.51632766598*^9, 3.516327687236*^9}, {
+   3.516327718023*^9, 3.516327762148*^9}, {3.516374098186*^9, 
+   3.516374111914*^9}, {3.5163741734779997`*^9, 3.516374316217*^9}, {
+   3.516374435525*^9, 3.5163744359630003`*^9}, {3.516374537568*^9, 
+   3.516374583163*^9}, {3.516374762429*^9, 3.516374772006*^9}, {
+   3.5163748394300003`*^9, 3.5163749844*^9}, {3.516375036127*^9, 
+   3.516375075453*^9}, {3.51637514145*^9, 3.516375168926*^9}, {
+   3.516375200354*^9, 3.5163752069849997`*^9}, {3.516375329468*^9, 
+   3.516375366641*^9}, {3.5163754071029997`*^9, 3.51637541277*^9}, {
+   3.516375588303*^9, 3.516375621949*^9}, {3.516375652487*^9, 
+   3.516375686009*^9}, {3.516375742767*^9, 3.5163758097609997`*^9}, {
+   3.516375844645*^9, 3.5163758474440002`*^9}, {3.516375943565*^9, 
+   3.516375989791*^9}, {3.516376077368*^9, 3.516376158259*^9}, {
+   3.5163761892790003`*^9, 3.516376209398*^9}, {3.516376267693*^9, 
+   3.5163762993*^9}, 3.516376608573*^9, {3.5163971591948*^9, 
+   3.516397176932*^9}, {3.5163972116576*^9, 3.5163972657312*^9}, {
+   3.5163973600810003`*^9, 3.5163973638562*^9}, {3.516397585969*^9, 
+   3.5163975880594*^9}, {3.5163977335137997`*^9, 3.5163977488486*^9}, {
+   3.5163979544098*^9, 3.5163979640038*^9}, {3.5163979980274*^9, 
+   3.5163980016778*^9}, {3.516398962123*^9, 3.5163989730898*^9}, {
+   3.5163990381574*^9, 3.5163990384538*^9}, {3.516399097921*^9, 
+   3.516399098311*^9}, {3.5163992056233997`*^9, 3.5163992863378*^9}, {
+   3.5163993402826*^9, 3.5163993651958*^9}, {3.5163994060366*^9, 
+   3.5163994737562*^9}, {3.5163996711118*^9, 3.5163996985834*^9}, {
+   3.516400137782*^9, 3.5164001635559998`*^9}, {3.5164002147469997`*^9, 
+   3.516400221781*^9}, {3.516400266549*^9, 3.51640031081*^9}, {
+   3.5164003656140003`*^9, 3.516400382441*^9}, {3.51640045265*^9, 
+   3.5164005649700003`*^9}, {3.516400606292*^9, 3.516400624177*^9}, {
+   3.5164007271879997`*^9, 3.516400731664*^9}, {3.516400807017*^9, 
+   3.516400961074*^9}, {3.516404475399*^9, 3.516404586275*^9}, {
+   3.5164049893710003`*^9, 3.516404989993*^9}, {3.516405066116*^9, 
+   3.516405066769*^9}, {3.516405107935*^9, 3.516405111274*^9}, {
+   3.516405141524*^9, 3.51640517005*^9}, {3.516410447941*^9, 
+   3.5164105171*^9}, {3.51641058634*^9, 3.5164105920620003`*^9}, {
+   3.5164106388710003`*^9, 3.516410658498*^9}, {3.5164111078929996`*^9, 
+   3.516411109334*^9}, {3.5164111468*^9, 3.5164111601549997`*^9}, 
+   3.516411190816*^9, {3.516411261633*^9, 3.516411275008*^9}, {
+   3.516411333512*^9, 3.516411362651*^9}, {3.51641152815*^9, 
+   3.516411591691*^9}, 3.516411662796*^9, {3.516411755288*^9, 
+   3.51641180396*^9}, {3.516411842329*^9, 3.51641184391*^9}, {
+   3.516411921874*^9, 3.516411949028*^9}, {3.5164120773059998`*^9, 
+   3.516412145824*^9}, {3.5164122093380003`*^9, 3.5164122205620003`*^9}, {
+   3.516412498609*^9, 3.5164126069820004`*^9}, {3.516412663531*^9, 
+   3.516412664593*^9}, {3.516413597369*^9, 3.516413604189*^9}, 
+   3.516413670218*^9, {3.516413713707*^9, 3.516413719665*^9}, {
+   3.516413776085*^9, 3.516413776216*^9}, {3.516413994171*^9, 
+   3.516413998448*^9}, {3.516414103825*^9, 3.516414108059*^9}, {
+   3.516414493199*^9, 3.516414543043*^9}, 3.516414881566*^9, {
+   3.516414912267*^9, 3.5164149344519997`*^9}, {3.516415106534*^9, 
+   3.516415108618*^9}, {3.516415156391*^9, 3.51641516881*^9}, {
+   3.516415218743*^9, 3.51641522398*^9}, {3.516415341538*^9, 
+   3.516415341703*^9}, {3.5164154371359997`*^9, 3.5164154525*^9}, {
+   3.516415580366*^9, 3.516415637336*^9}, {3.516416472701*^9, 
+   3.516416482942*^9}, {3.516416874652*^9, 3.51641694152*^9}, {
+   3.516416972481*^9, 3.516417050844*^9}, {3.516417088197*^9, 
+   3.5164170918780003`*^9}, {3.516417131656*^9, 3.516417295512*^9}, {
+   3.516417398491*^9, 3.5164174011940002`*^9}, {3.516417467836*^9, 
+   3.516417572704*^9}, {3.516417632869*^9, 3.5164176387200003`*^9}, {
+   3.516417677948*^9, 3.516417731955*^9}, {3.5164177940559998`*^9, 
+   3.516417836722*^9}, 3.516417922398*^9, {3.516418072134*^9, 
+   3.516418086383*^9}, {3.5164183806*^9, 3.5164184648640003`*^9}, {
+   3.5164185878190002`*^9, 3.516418799086*^9}, {3.5164188380769997`*^9, 
+   3.5164188826359997`*^9}, 3.5164189658120003`*^9, {3.516419017677*^9, 
+   3.516419022078*^9}, {3.516419070858*^9, 3.51641907195*^9}, {
+   3.516419203822*^9, 3.516419237231*^9}, {3.5164192689519997`*^9, 
+   3.5164192790030003`*^9}, {3.516419346781*^9, 3.516419350752*^9}, {
+   3.516419478296*^9, 3.516419480356*^9}, {3.516419562762*^9, 
+   3.516419631771*^9}, {3.51641967*^9, 3.5164198092469997`*^9}, {
+   3.5164198654189997`*^9, 3.516419865778*^9}, {3.516419905567*^9, 
+   3.516419917299*^9}, {3.516420010799*^9, 3.5164201191730003`*^9}, 
+   3.516420260241*^9, {3.5164202951070004`*^9, 3.516420303709*^9}, {
+   3.516420384809*^9, 3.5164204030959997`*^9}, {3.5164204383529997`*^9, 
+   3.516420507332*^9}, {3.5164205399820004`*^9, 3.51642054156*^9}, {
+   3.516420706523*^9, 3.516420728102*^9}, {3.516420821543*^9, 
+   3.516420825296*^9}, {3.516420861514*^9, 3.5164208787679996`*^9}, {
+   3.516420933951*^9, 3.516420946726*^9}, {3.516421000176*^9, 
+   3.516421020376*^9}, {3.5164210752790003`*^9, 3.516421079151*^9}, {
+   3.516421140521*^9, 3.516421166316*^9}, {3.516421214828*^9, 
+   3.516421274049*^9}, {3.516421342282*^9, 3.5164213758059998`*^9}, {
+   3.516421425102*^9, 3.5164214321619997`*^9}, {3.516421518994*^9, 
+   3.516421520343*^9}, {3.5164215793599997`*^9, 3.516421697098*^9}, {
+   3.516421739366*^9, 3.5164217460439997`*^9}, {3.5164217900299997`*^9, 
+   3.516421841717*^9}, 3.5164219128190002`*^9, {3.516421961847*^9, 
+   3.516421976949*^9}, {3.516422026289*^9, 3.51642217279*^9}, {
+   3.516422214481*^9, 3.516422270178*^9}, 3.516422315797*^9, {
+   3.51642235829*^9, 3.5164223598120003`*^9}, {3.5164555250299997`*^9, 
+   3.516455526396*^9}, {3.5164558102139997`*^9, 3.516455904138*^9}, {
+   3.5164559637720003`*^9, 3.516455999848*^9}, {3.5164560344639997`*^9, 
+   3.516456054995*^9}, {3.516456086939*^9, 3.516456087204*^9}, {
+   3.516458125225*^9, 3.5164581674110003`*^9}, {3.51645827487*^9, 
+   3.516458316505*^9}, {3.5164584750889997`*^9, 3.5164584948719997`*^9}, {
+   3.5164587386289997`*^9, 3.5164587429189997`*^9}, 3.516458806209*^9, {
+   3.51645890263*^9, 3.516458904468*^9}, {3.516458936823*^9, 
+   3.516458947682*^9}, {3.516459002841*^9, 3.5164590637869997`*^9}, {
+   3.516459237017*^9, 3.51645924101*^9}, 3.5164593025550003`*^9, {
+   3.516459395657*^9, 3.516459413502*^9}, {3.516459539092*^9, 
+   3.516459580322*^9}, {3.5164596481949997`*^9, 3.51645966696*^9}, {
+   3.516459765385*^9, 3.516459778446*^9}, {3.5164598890880003`*^9, 
+   3.516459889248*^9}, {3.516459946249*^9, 3.516459951021*^9}, {
+   3.516459987465*^9, 3.516459998363*^9}, {3.516460188295*^9, 
+   3.516460231594*^9}, {3.5164602751610003`*^9, 3.516460346314*^9}, 
+   3.5164604046400003`*^9, 3.516460447082*^9, 3.5164605628640003`*^9, 
+   3.516460658285*^9, 3.516460746885*^9, {3.516460993292*^9, 
+   3.5164610076070004`*^9}, 3.516461282542*^9, {3.516461411799*^9, 
+   3.516461532472*^9}, {3.5164616184189997`*^9, 3.516461652692*^9}, {
+   3.516461683038*^9, 3.5164616831540003`*^9}, {3.5164617604779997`*^9, 
+   3.516461773834*^9}, {3.516503350991*^9, 3.516503380398*^9}, 
+   3.5165036503970003`*^9, {3.516503683969*^9, 3.516503691665*^9}, {
+   3.516503732852*^9, 3.516503767593*^9}, {3.516503820968*^9, 
+   3.5165039147320004`*^9}, {3.516504000508*^9, 3.516504027174*^9}, {
+   3.5165040802609997`*^9, 3.516504150113*^9}, {3.51650418795*^9, 
+   3.5165042752530003`*^9}, {3.516504321512*^9, 3.516504335141*^9}, {
+   3.516504410618*^9, 3.516504438323*^9}, 3.516504486054*^9, {
+   3.516504519216*^9, 3.516504523502*^9}, {3.516504579955*^9, 
+   3.516504725825*^9}, {3.516504793184*^9, 3.516504795005*^9}, {
+   3.516504849743*^9, 3.516504872349*^9}, {3.516505483567*^9, 
+   3.5165055021219997`*^9}, {3.516505633635*^9, 3.516505639414*^9}, {
+   3.516633207149*^9, 3.516633213087*^9}, {3.516661559278*^9, 
+   3.5166615597349997`*^9}, {3.516661598033*^9, 3.516661645091*^9}, {
+   3.516661676284*^9, 3.516661763742*^9}, {3.516661794572*^9, 
+   3.516661859249*^9}, {3.516661943593*^9, 3.51666204066*^9}, {
+   3.5166621550690002`*^9, 3.516662165341*^9}, {3.51666226996*^9, 
+   3.516662275668*^9}, {3.5639053281925726`*^9, 3.5639053295725727`*^9}, {
+   3.5639054686385727`*^9, 3.5639054695875726`*^9}, {3.617381819103302*^9, 
+   3.617381820976103*^9}, {3.6173818590126133`*^9, 3.6173818600886455`*^9}, {
+   3.617561407413884*^9, 3.6175614292944727`*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  PanelBox[
+   TagBox[
+    PanelBox[
+     TagBox[GridBox[{
+        {
+         StyleBox[
+          DynamicBox[ToBoxes[$CellContext`titleText$65439, StandardForm],
+           ImageSizeCache->{789., {9., 32.}}], "Title",
+          StripOnInput->False], "\[SpanFromLeft]"},
+        {
+         PaneBox["\<\" \"\>"], "\[SpanFromLeft]"},
+        {
+         PanelBox[
+          TagBox[GridBox[{
+             {
+              ButtonBox["\<\"New Game\"\>",
+               Appearance->Automatic,
+               ButtonFunction:>$CellContext`newGame$65439,
+               Evaluator->Automatic,
+               Method->"Preemptive"]},
+             {
+              TemplateBox[{CheckboxBox[
+                 Dynamic[$CellContext`twoPlayerBoole$65439]],"\"2 Player\""},
+               "Labeled",
+               DisplayFunction->(GridBox[{{
+                   ItemBox[#2, DefaultBaseStyle -> "LabeledLabel"], 
+                   TagBox[
+                    ItemBox[
+                    PaneBox[
+                    TagBox[#, "SkipImageSizeLevel"], 
+                    Alignment -> {Center, Baseline}, BaselinePosition -> 
+                    Baseline], DefaultBaseStyle -> "Labeled"], 
+                    "SkipImageSizeLevel"]}}, 
+                 GridBoxAlignment -> {
+                  "Columns" -> {{Center}}, "Rows" -> {{Center}}}, AutoDelete -> 
+                 False, GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                 BaselinePosition -> {1, 2}]& ),
+               InterpretationFunction->(RowBox[{"Labeled", "[", 
+                  RowBox[{#, ",", #2, ",", "Left"}], "]"}]& )]},
+             {
+              PaneBox["\<\" \"\>"]},
+             {
+              PaneBox["\<\"Number of Pegs\"\>"]},
+             {
+              
+              PopupMenuBox[Dynamic[$CellContext`numPegsSetter$65439], {1->"1",
+                2->"2", 3->"3", 4->"4", 5->"5", 6->"6", 7->"7", 8->"8", 9->
+               "9", 10->"10"}]},
+             {
+              PaneBox["\<\" \"\>"]},
+             {
+              PaneBox["\<\"Number of Colors\"\>"]},
+             {
+              
+              PopupMenuBox[Dynamic[$CellContext`numColorsSetter$65439], {1->
+               "1", 2->"2", 3->"3", 4->"4", 5->"5", 6->"6", 7->"7", 8->"8", 9->
+               "9", 10->"10", 11->"11", 12->"12"}]},
+             {
+              TemplateBox[{CheckboxBox[
+                 Dynamic[$CellContext`repeatsBoole$65439]],
+                "\"No Repeated Colors\""},
+               "Labeled",
+               DisplayFunction->(GridBox[{{
+                   ItemBox[#2, DefaultBaseStyle -> "LabeledLabel"], 
+                   TagBox[
+                    ItemBox[
+                    PaneBox[
+                    TagBox[#, "SkipImageSizeLevel"], 
+                    Alignment -> {Center, Baseline}, BaselinePosition -> 
+                    Baseline], DefaultBaseStyle -> "Labeled"], 
+                    "SkipImageSizeLevel"]}}, 
+                 GridBoxAlignment -> {
+                  "Columns" -> {{Center}}, "Rows" -> {{Center}}}, AutoDelete -> 
+                 False, GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                 BaselinePosition -> {1, 2}]& ),
+               InterpretationFunction->(RowBox[{"Labeled", "[", 
+                  RowBox[{#, ",", #2, ",", "Left"}], "]"}]& )]},
+             {
+              PaneBox["\<\" \"\>"]},
+             {
+              PaneBox["\<\"Number of Guesses\"\>"]},
+             {
+              
+              PopupMenuBox[Dynamic[$CellContext`numGuessesSetter$65439], {1->
+               "1", 2->"2", 3->"3", 4->"4", 5->"5", 6->"6", 7->"7", 8->"8", 9->
+               "9", 10->"10", 11->"11", 12->"12", 13->"13", 14->"14", 15->
+               "15", 16->"16", 17->"17", 18->"18", 19->"19", 20->"20", 21->
+               "21", 22->"22", 23->"23", 24->"24", 25->"\<\"\[Infinity]\"\>"}]}
+            },
+            DefaultBaseStyle->"Column",
+            GridBoxAlignment->{"Columns" -> {{Center}}},
+            
+            GridBoxItemSize->{
+             "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+           "Column"]], 
+         DynamicBox[ToBoxes[
+           Grid[
+            Thread[{
+              Part[$CellContext`numbering$65439, 
+               Span[1, 8]], 
+              Part[$CellContext`guessed$65439, 
+               Span[1, 8]], 
+              Part[$CellContext`numbering$65439, 
+               Span[9, 16]], 
+              Part[$CellContext`guessed$65439, 
+               Span[9, 16]], 
+              Part[$CellContext`numbering$65439, 
+               Span[17, 24]], 
+              Part[$CellContext`guessed$65439, 
+               Span[17, 24]]}], ItemSize -> {{3, 
+               Scaled[0.28], 3, 
+               Scaled[0.28], 3, 
+               Scaled[0.28]}, 3.5}, Alignment -> {Center, Center}, Frame -> 
+            All], StandardForm],
+          ImageSizeCache->{890., {189., 196.}},
+          
+          TrackedSymbols:>{$CellContext`guessed$65439, \
+$CellContext`numGuesses$65439, $CellContext`historyIterator$65439}]},
+        {
+         TemplateBox[{
+          PanelBox["\" \"", Appearance -> "Frameless", ImageSize -> 255],
+           DynamicBox[
+            ToBoxes[
+             Panel[
+              Grid[{
+                Table[
+                 $CellContext`peg$65439[$CellContext`i], {$CellContext`i, 
+                  1, $CellContext`numPegs$65439}], {
+                 
+                 Button[$CellContext`buttonText$65439, \
+$CellContext`submitGuess$65439, ImageSize -> Full], SpanFromLeft}}]], 
+             StandardForm], ImageSizeCache -> {202., {52., 60.}}, 
+            TrackedSymbols :> {$CellContext`numPegs$65439, \
+$CellContext`numColors$65439, $CellContext`buttonText$65439, \
+$CellContext`sequence$65439}],PanelBox["\"   \"", Appearance -> "Frameless"],
+           PanelBox[
+            TagBox[
+             GridBox[{{
+                GraphicsBox[{
+                  RGBColor[1, 0, 0], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ], 
+                GraphicsBox[{
+                  RGBColor[0, 1, 0], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ], 
+                GraphicsBox[{
+                  RGBColor[0, 0, 1], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ], 
+                GraphicsBox[{
+                  RGBColor[1, 1, 0], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ]}, {
+                GraphicsBox[{
+                  GrayLevel[1], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ], 
+                GraphicsBox[{
+                  GrayLevel[0], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ], 
+                GraphicsBox[{
+                  RGBColor[0, 1, 1], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ], 
+                GraphicsBox[{
+                  RGBColor[1, 0, 1], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ]}, {
+                GraphicsBox[{
+                  RGBColor[1, 0.5, 0], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ], 
+                GraphicsBox[{
+                  RGBColor[1, 0.5, 0.5], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ], 
+                GraphicsBox[{
+                  RGBColor[0.5, 0, 0.5], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ], 
+                GraphicsBox[{
+                  RGBColor[0.6, 0.4, 0.2], 
+                  EdgeForm[
+                   Thickness[Large]], 
+                  RectangleBox[{0, 0}]}, ImageSize -> 20], 
+                TagBox[
+                 DynamicModuleBox[{Typeset`i$$ = Null}, 
+                  InputFieldBox[
+                   Dynamic[Typeset`i$$], FieldSize -> 1], 
+                  DynamicModuleValues :> {}], InputField[
+                  Setting[#], FieldSize -> 1]& ]}}, AutoDelete -> False, 
+              GridBoxItemSize -> {
+               "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"],
+             ImageSize -> {250, 110}]},
+          "RowDefault"], "\[SpanFromLeft]"}
+       },
+       AutoDelete->False,
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+      "Grid"],
+     ImageSize->{1100, 580}],
+    Deploy,
+    DefaultBaseStyle->"Deploy"],
+   Background->GrayLevel[0]],
+  EventHandlerTag[{{"KeyDown", "t"} :> 
+    If[$CellContext`twoPlayerBoole$65439 == 
+      False, $CellContext`twoPlayerBoole$65439 = 
+      True, $CellContext`twoPlayerBoole$65439 = False], {"KeyDown", "r"} :> 
+    If[$CellContext`repeatsBoole$65439 == 
+      False, $CellContext`repeatsBoole$65439 = 
+      True, $CellContext`repeatsBoole$65439 = False], {"KeyDown", "p"} :> 
+    If[$CellContext`numPegsSetter$65439 == 
+      10, $CellContext`numPegsSetter$65439 = 1, 
+      Increment[$CellContext`numPegsSetter$65439]], {"KeyDown", "c"} :> 
+    If[$CellContext`numColorsSetter$65439 == 
+      12, $CellContext`numColorsSetter$65439 = 1, 
+      Increment[$CellContext`numColorsSetter$65439]], {"KeyDown", "g"} :> 
+    If[$CellContext`numGuessesSetter$65439 == 
+      25, $CellContext`numGuessesSetter$65439 = 1, 
+      Increment[$CellContext`numGuessesSetter$65439]], {"KeyDown", "k"} :> 
+    If[Part[$CellContext`keep$65439, $CellContext`select$65439] == False, 
+      Part[$CellContext`keep$65439, $CellContext`select$65439] = True, 
+      Part[$CellContext`keep$65439, $CellContext`select$65439] = False], 
+    "EscapeKeyDown" :> $CellContext`newGame$65439, "RightArrowKeyDown" :> 
+    If[$CellContext`select$65439 == $CellContext`numPegs$65439, \
+$CellContext`select$65439 = 1, 
+      AddTo[$CellContext`select$65439, 1]], "LeftArrowKeyDown" :> 
+    If[$CellContext`select$65439 == 
+      1, $CellContext`select$65439 = $CellContext`numPegs$65439, 
+      SubtractFrom[$CellContext`select$65439, 1]], "UpArrowKeyDown" :> If[
+      And[
+      Part[$CellContext`keep$65439, $CellContext`select$65439] == 
+       False, $CellContext`playing$65439 == True], 
+      If[Part[$CellContext`sequence$65439, $CellContext`select$65439] == \
+$CellContext`numColors$65439, 
+       Part[$CellContext`sequence$65439, $CellContext`select$65439] = 1, 
+       AddTo[
+        Part[$CellContext`sequence$65439, $CellContext`select$65439], 1]]], 
+    "DownArrowKeyDown" :> If[
+      And[
+      Part[$CellContext`keep$65439, $CellContext`select$65439] == 
+       False, $CellContext`playing$65439 == True], 
+      If[Part[$CellContext`sequence$65439, $CellContext`select$65439] == 1, 
+       Part[$CellContext`sequence$65439, $CellContext`select$65439] = \
+$CellContext`numColors$65439, 
+       SubtractFrom[
+        Part[$CellContext`sequence$65439, $CellContext`select$65439], 1]]], 
+    "ReturnKeyDown" :> $CellContext`submitGuess$65439, PassEventsDown -> 
+    Automatic, PassEventsUp -> True}]]], "Output",
+ CellChangeTimes->{3.6164638051768103`*^9, 3.6173818607512817`*^9, 
+  3.617561898862872*^9}]
+}, Open  ]]
+},
+WindowSize->{1187, 826},
+WindowMargins->{{277, Automatic}, {Automatic, 32}},
+FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (January 25, 2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 58042, 1223, 3359, "Input"],
+Cell[58624, 1247, 14694, 332, 652, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
