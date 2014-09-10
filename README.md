@@ -30,7 +30,7 @@ the stick figure performs a standing back tuck that looks quite realistic. I had
 hopes to produce other animations, but ran out of time on the project and had to
 focus on classes again.
 
-![Backflip Animation](tjohnson31415\Mathematica-Fun-Projects\backflip.gif)
+![Backflip Animation](backflip.gif)
 
 ## License
 
