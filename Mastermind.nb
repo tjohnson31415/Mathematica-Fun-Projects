@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     73662,       1598]
-NotebookOptionsPosition[     73334,       1582]
-NotebookOutlinePosition[     73680,       1597]
-CellTagsIndexPosition[     73637,       1594]
+NotebookDataLength[     73862,       1602]
+NotebookOptionsPosition[     73534,       1586]
+NotebookOutlinePosition[     73880,       1601]
+CellTagsIndexPosition[     73837,       1598]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -755,6 +755,9 @@ Cell[BoxData[
               RowBox[{"sequence", ",", "solution"}], "]"}]}], ";", 
             "\[IndentingNewLine]", "\t", 
             RowBox[{"sequence", "=", "solution"}], ";", 
+            RowBox[{
+            "titleText", " ", "=", " ", 
+             "\"\<You are not the Mastermind.\>\""}], ";", " ", 
             RowBox[{"buttonText", "=", "\"\<Correct Solution\>\""}], ";", 
             RowBox[{"playing", "=", "False"}]}]}], "]"}]}], 
         "\[IndentingNewLine]", "]"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
@@ -1243,7 +1246,8 @@ Cell[BoxData[
    3.516662275668*^9}, {3.5639053281925726`*^9, 3.5639053295725727`*^9}, {
    3.5639054686385727`*^9, 3.5639054695875726`*^9}, {3.617381819103302*^9, 
    3.617381820976103*^9}, {3.6173818590126133`*^9, 3.6173818600886455`*^9}, {
-   3.617561407413884*^9, 3.6175614292944727`*^9}}],
+   3.617561407413884*^9, 3.6175614292944727`*^9}, {3.6193788276588163`*^9, 
+   3.61937884257813*^9}}],
 
 Cell[BoxData[
  TagBox[
@@ -1253,7 +1257,7 @@ Cell[BoxData[
      TagBox[GridBox[{
         {
          StyleBox[
-          DynamicBox[ToBoxes[$CellContext`titleText$65439, StandardForm],
+          DynamicBox[ToBoxes[$CellContext`titleText$34196, StandardForm],
            ImageSizeCache->{789., {9., 32.}}], "Title",
           StripOnInput->False], "\[SpanFromLeft]"},
         {
@@ -1264,12 +1268,12 @@ Cell[BoxData[
              {
               ButtonBox["\<\"New Game\"\>",
                Appearance->Automatic,
-               ButtonFunction:>$CellContext`newGame$65439,
+               ButtonFunction:>$CellContext`newGame$34196,
                Evaluator->Automatic,
                Method->"Preemptive"]},
              {
               TemplateBox[{CheckboxBox[
-                 Dynamic[$CellContext`twoPlayerBoole$65439]],"\"2 Player\""},
+                 Dynamic[$CellContext`twoPlayerBoole$34196]],"\"2 Player\""},
                "Labeled",
                DisplayFunction->(GridBox[{{
                    ItemBox[#2, DefaultBaseStyle -> "LabeledLabel"], 
@@ -1293,7 +1297,7 @@ Cell[BoxData[
               PaneBox["\<\"Number of Pegs\"\>"]},
              {
               
-              PopupMenuBox[Dynamic[$CellContext`numPegsSetter$65439], {1->"1",
+              PopupMenuBox[Dynamic[$CellContext`numPegsSetter$34196], {1->"1",
                 2->"2", 3->"3", 4->"4", 5->"5", 6->"6", 7->"7", 8->"8", 9->
                "9", 10->"10"}]},
              {
@@ -1302,12 +1306,12 @@ Cell[BoxData[
               PaneBox["\<\"Number of Colors\"\>"]},
              {
               
-              PopupMenuBox[Dynamic[$CellContext`numColorsSetter$65439], {1->
+              PopupMenuBox[Dynamic[$CellContext`numColorsSetter$34196], {1->
                "1", 2->"2", 3->"3", 4->"4", 5->"5", 6->"6", 7->"7", 8->"8", 9->
                "9", 10->"10", 11->"11", 12->"12"}]},
              {
               TemplateBox[{CheckboxBox[
-                 Dynamic[$CellContext`repeatsBoole$65439]],
+                 Dynamic[$CellContext`repeatsBoole$34196]],
                 "\"No Repeated Colors\""},
                "Labeled",
                DisplayFunction->(GridBox[{{
@@ -1332,7 +1336,7 @@ Cell[BoxData[
               PaneBox["\<\"Number of Guesses\"\>"]},
              {
               
-              PopupMenuBox[Dynamic[$CellContext`numGuessesSetter$65439], {1->
+              PopupMenuBox[Dynamic[$CellContext`numGuessesSetter$34196], {1->
                "1", 2->"2", 3->"3", 4->"4", 5->"5", 6->"6", 7->"7", 8->"8", 9->
                "9", 10->"10", 11->"11", 12->"12", 13->"13", 14->"14", 15->
                "15", 16->"16", 17->"17", 18->"18", 19->"19", 20->"20", 21->
@@ -1347,17 +1351,17 @@ Cell[BoxData[
          DynamicBox[ToBoxes[
            Grid[
             Thread[{
-              Part[$CellContext`numbering$65439, 
+              Part[$CellContext`numbering$34196, 
                Span[1, 8]], 
-              Part[$CellContext`guessed$65439, 
+              Part[$CellContext`guessed$34196, 
                Span[1, 8]], 
-              Part[$CellContext`numbering$65439, 
+              Part[$CellContext`numbering$34196, 
                Span[9, 16]], 
-              Part[$CellContext`guessed$65439, 
+              Part[$CellContext`guessed$34196, 
                Span[9, 16]], 
-              Part[$CellContext`numbering$65439, 
+              Part[$CellContext`numbering$34196, 
                Span[17, 24]], 
-              Part[$CellContext`guessed$65439, 
+              Part[$CellContext`guessed$34196, 
                Span[17, 24]]}], ItemSize -> {{3, 
                Scaled[0.28], 3, 
                Scaled[0.28], 3, 
@@ -1365,8 +1369,8 @@ Cell[BoxData[
             All], StandardForm],
           ImageSizeCache->{890., {189., 196.}},
           
-          TrackedSymbols:>{$CellContext`guessed$65439, \
-$CellContext`numGuesses$65439, $CellContext`historyIterator$65439}]},
+          TrackedSymbols:>{$CellContext`guessed$34196, \
+$CellContext`numGuesses$34196, $CellContext`historyIterator$34196}]},
         {
          TemplateBox[{
           PanelBox["\" \"", Appearance -> "Frameless", ImageSize -> 255],
@@ -1375,15 +1379,15 @@ $CellContext`numGuesses$65439, $CellContext`historyIterator$65439}]},
              Panel[
               Grid[{
                 Table[
-                 $CellContext`peg$65439[$CellContext`i], {$CellContext`i, 
-                  1, $CellContext`numPegs$65439}], {
+                 $CellContext`peg$34196[$CellContext`i], {$CellContext`i, 
+                  1, $CellContext`numPegs$34196}], {
                  
-                 Button[$CellContext`buttonText$65439, \
-$CellContext`submitGuess$65439, ImageSize -> Full], SpanFromLeft}}]], 
-             StandardForm], ImageSizeCache -> {202., {52., 60.}}, 
-            TrackedSymbols :> {$CellContext`numPegs$65439, \
-$CellContext`numColors$65439, $CellContext`buttonText$65439, \
-$CellContext`sequence$65439}],PanelBox["\"   \"", Appearance -> "Frameless"],
+                 Button[$CellContext`buttonText$34196, \
+$CellContext`submitGuess$34196, ImageSize -> Full], SpanFromLeft}}]], 
+             StandardForm], ImageSizeCache -> {394., {52., 60.}}, 
+            TrackedSymbols :> {$CellContext`numPegs$34196, \
+$CellContext`numColors$34196, $CellContext`buttonText$34196, \
+$CellContext`sequence$34196}],PanelBox["\"   \"", Appearance -> "Frameless"],
            PanelBox[
             TagBox[
              GridBox[{{
@@ -1532,56 +1536,56 @@ $CellContext`sequence$65439}],PanelBox["\"   \"", Appearance -> "Frameless"],
     DefaultBaseStyle->"Deploy"],
    Background->GrayLevel[0]],
   EventHandlerTag[{{"KeyDown", "t"} :> 
-    If[$CellContext`twoPlayerBoole$65439 == 
-      False, $CellContext`twoPlayerBoole$65439 = 
-      True, $CellContext`twoPlayerBoole$65439 = False], {"KeyDown", "r"} :> 
-    If[$CellContext`repeatsBoole$65439 == 
-      False, $CellContext`repeatsBoole$65439 = 
-      True, $CellContext`repeatsBoole$65439 = False], {"KeyDown", "p"} :> 
-    If[$CellContext`numPegsSetter$65439 == 
-      10, $CellContext`numPegsSetter$65439 = 1, 
-      Increment[$CellContext`numPegsSetter$65439]], {"KeyDown", "c"} :> 
-    If[$CellContext`numColorsSetter$65439 == 
-      12, $CellContext`numColorsSetter$65439 = 1, 
-      Increment[$CellContext`numColorsSetter$65439]], {"KeyDown", "g"} :> 
-    If[$CellContext`numGuessesSetter$65439 == 
-      25, $CellContext`numGuessesSetter$65439 = 1, 
-      Increment[$CellContext`numGuessesSetter$65439]], {"KeyDown", "k"} :> 
-    If[Part[$CellContext`keep$65439, $CellContext`select$65439] == False, 
-      Part[$CellContext`keep$65439, $CellContext`select$65439] = True, 
-      Part[$CellContext`keep$65439, $CellContext`select$65439] = False], 
-    "EscapeKeyDown" :> $CellContext`newGame$65439, "RightArrowKeyDown" :> 
-    If[$CellContext`select$65439 == $CellContext`numPegs$65439, \
-$CellContext`select$65439 = 1, 
-      AddTo[$CellContext`select$65439, 1]], "LeftArrowKeyDown" :> 
-    If[$CellContext`select$65439 == 
-      1, $CellContext`select$65439 = $CellContext`numPegs$65439, 
-      SubtractFrom[$CellContext`select$65439, 1]], "UpArrowKeyDown" :> If[
+    If[$CellContext`twoPlayerBoole$34196 == 
+      False, $CellContext`twoPlayerBoole$34196 = 
+      True, $CellContext`twoPlayerBoole$34196 = False], {"KeyDown", "r"} :> 
+    If[$CellContext`repeatsBoole$34196 == 
+      False, $CellContext`repeatsBoole$34196 = 
+      True, $CellContext`repeatsBoole$34196 = False], {"KeyDown", "p"} :> 
+    If[$CellContext`numPegsSetter$34196 == 
+      10, $CellContext`numPegsSetter$34196 = 1, 
+      Increment[$CellContext`numPegsSetter$34196]], {"KeyDown", "c"} :> 
+    If[$CellContext`numColorsSetter$34196 == 
+      12, $CellContext`numColorsSetter$34196 = 1, 
+      Increment[$CellContext`numColorsSetter$34196]], {"KeyDown", "g"} :> 
+    If[$CellContext`numGuessesSetter$34196 == 
+      25, $CellContext`numGuessesSetter$34196 = 1, 
+      Increment[$CellContext`numGuessesSetter$34196]], {"KeyDown", "k"} :> 
+    If[Part[$CellContext`keep$34196, $CellContext`select$34196] == False, 
+      Part[$CellContext`keep$34196, $CellContext`select$34196] = True, 
+      Part[$CellContext`keep$34196, $CellContext`select$34196] = False], 
+    "EscapeKeyDown" :> $CellContext`newGame$34196, "RightArrowKeyDown" :> 
+    If[$CellContext`select$34196 == $CellContext`numPegs$34196, \
+$CellContext`select$34196 = 1, 
+      AddTo[$CellContext`select$34196, 1]], "LeftArrowKeyDown" :> 
+    If[$CellContext`select$34196 == 
+      1, $CellContext`select$34196 = $CellContext`numPegs$34196, 
+      SubtractFrom[$CellContext`select$34196, 1]], "UpArrowKeyDown" :> If[
       And[
-      Part[$CellContext`keep$65439, $CellContext`select$65439] == 
-       False, $CellContext`playing$65439 == True], 
-      If[Part[$CellContext`sequence$65439, $CellContext`select$65439] == \
-$CellContext`numColors$65439, 
-       Part[$CellContext`sequence$65439, $CellContext`select$65439] = 1, 
+      Part[$CellContext`keep$34196, $CellContext`select$34196] == 
+       False, $CellContext`playing$34196 == True], 
+      If[Part[$CellContext`sequence$34196, $CellContext`select$34196] == \
+$CellContext`numColors$34196, 
+       Part[$CellContext`sequence$34196, $CellContext`select$34196] = 1, 
        AddTo[
-        Part[$CellContext`sequence$65439, $CellContext`select$65439], 1]]], 
+        Part[$CellContext`sequence$34196, $CellContext`select$34196], 1]]], 
     "DownArrowKeyDown" :> If[
       And[
-      Part[$CellContext`keep$65439, $CellContext`select$65439] == 
-       False, $CellContext`playing$65439 == True], 
-      If[Part[$CellContext`sequence$65439, $CellContext`select$65439] == 1, 
-       Part[$CellContext`sequence$65439, $CellContext`select$65439] = \
-$CellContext`numColors$65439, 
+      Part[$CellContext`keep$34196, $CellContext`select$34196] == 
+       False, $CellContext`playing$34196 == True], 
+      If[Part[$CellContext`sequence$34196, $CellContext`select$34196] == 1, 
+       Part[$CellContext`sequence$34196, $CellContext`select$34196] = \
+$CellContext`numColors$34196, 
        SubtractFrom[
-        Part[$CellContext`sequence$65439, $CellContext`select$65439], 1]]], 
-    "ReturnKeyDown" :> $CellContext`submitGuess$65439, PassEventsDown -> 
+        Part[$CellContext`sequence$34196, $CellContext`select$34196], 1]]], 
+    "ReturnKeyDown" :> $CellContext`submitGuess$34196, PassEventsDown -> 
     Automatic, PassEventsUp -> True}]]], "Output",
  CellChangeTimes->{3.6164638051768103`*^9, 3.6173818607512817`*^9, 
-  3.617561898862872*^9}]
+  3.617561898862872*^9, 3.619378381914917*^9}]
 }, Open  ]]
 },
-WindowSize->{1187, 826},
-WindowMargins->{{277, Automatic}, {Automatic, 32}},
+WindowSize->{1372, 826},
+WindowMargins->{{Automatic, 234}, {Automatic, 15}},
 FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (January 25, 2013)",
 StyleDefinitions->"Default.nb"
 ]
@@ -1597,12 +1601,11 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[579, 22, 58042, 1223, 3359, "Input"],
-Cell[58624, 1247, 14694, 332, 652, "Output"]
+Cell[579, 22, 58220, 1227, 3359, "Input"],
+Cell[58802, 1251, 14716, 332, 620, "Output"]
 }, Open  ]]
 }
 ]
 *)
 
 (* End of internal cache information *)
-
