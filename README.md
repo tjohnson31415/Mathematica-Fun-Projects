@@ -33,13 +33,13 @@ project. It was always helpful to be able to visualize the movements before
 attempting the skill. I created this program to assist with that.
 
 A stick figure is constructed from anthropometric data that I found in a paper
-documenting the dimensions of aircraft pilots. This figure is completely
+documenting the dimensions of aircraft pilots. The figure is completely
 movable, with each joint having up to three Euler angle rotations that are
 programmable. Using this, I created an animation where the stick figure
-performs a standing back tuck that looks quite realistic. I had hopes to
-produce other animations, but ran out of time on the project and had to focus
-on classes again. The center of mass is also calculated for each configuration
-and is shown on the figure.
+performs a standing back tuck that looks quite realistic. The center of mass is
+also calculated for each configuration and is shown on the figure. I had hopes
+to produce other animations, but ran out of time on the project and had to
+focus on classes again.
 
 ![Backflip Animation](backflip.gif)
 
